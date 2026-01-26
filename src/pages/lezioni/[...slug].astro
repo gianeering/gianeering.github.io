@@ -1,0 +1,20 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection('lezioni');
+  console.log('Slugs disponibili:', blogEntries.map(e => e.slug));
+  return blogEntries.map(entry => ({
+    params: { slug: entry.slug }, props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<head><title>{entry.data.page_title}</title></head>
+<body style="margin:0; padding 0; width:100%; height:100vh; overflow:hidden; margin:0px; padding:0px; border:none;"></body>
+<Content frontmatter={entry.data}>
+
+</Content>

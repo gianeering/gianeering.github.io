@@ -1,0 +1,68 @@
+.title {
+  display: flex;
+  justify-content: center;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 5rem; /* titolo ingrandito */
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 12px #000000;
+  user-select: none;
+  margin: 0;
+  z-index: 2;
+
+  filter: drop-shadow(0 10px 6px rgba(0,0,0,0.6));
+
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.letter {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+  margin: 0;
+}
+
+.base,
+.greek {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.base {
+  opacity: 1;
+  z-index: 1;
+}
+
+.greek {
+  opacity: 0;
+  z-index: 2;
+}
+
+.fadeIn {
+  opacity: 1;
+}
+
+.fadeOut {
+  opacity: 0;
+}
+
+.lambdaLetter .base {
+  color: #ff7700;
+  text-shadow: 0 0 10px #ff00aa;
+}
+
+.lambdaGreek {
+  color: #ff7700;
+  text-shadow: 0 0 12px #ff00aa;
+}
+
+

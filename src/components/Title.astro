@@ -1,0 +1,45 @@
+---
+import EigenTitle from "./EigenTitle.jsx";
+import SearchResults from "./SearchResults.astro";
+---
+
+<div class="preTitle">
+  Benvenuto nel database di conoscenza
+  <a href="/placeholder" style="text-decoration:none; color:#ff6f00;">
+    <em>personale</em>
+  </a>
+</div>
+<EigenTitle client:load />
+<div class="subtitle">
+  Appunti • Esercizi • Tutorial
+  <SearchResults />
+</div>
+
+<style>
+  .title-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* PRE-TITOLO */
+  .preTitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #ffffff;
+    opacity: 0.85;
+    margin-bottom: 0.5rem;
+    font-family: "Courier New", Courier, monospace;
+  }
+
+  /* DESCRIZIONE → stesso stile del pretitolo */
+  .subtitle {
+    text-align: center;
+    font-size: 1.1rem; /* stesso size */
+    color: #ffffff; /* stesso colore */
+    opacity: 0.85; /* stessa trasparenza */
+    margin-top: 2rem;
+    font-family: "Courier New", Courier, monospace;
+  }
+</style>
