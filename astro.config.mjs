@@ -15,6 +15,5 @@ const BASE_URL = isBuild ? LIVE_URL : LOCALHOST_URL;
 export default defineConfig({
   server: { port: SERVER_PORT },
   site: BASE_URL,
-
   integrations: [react(), mdx()],
 });
