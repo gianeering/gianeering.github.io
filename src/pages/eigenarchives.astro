@@ -1,0 +1,152 @@
+---
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import Tree from "../components/Archive.astro";
+
+const ROOT_DIR = fileURLToPath(new URL("../content/lezioni", import.meta.url));
+
+function readTree(dir, base = "") {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  return entries
+    .map((entry) => {
+      const fullPath = path.join(dir, entry.name);
+      const relativePath = path.join(base, entry.name);
+
+      if (entry.isDirectory()) {
+        return {
+          type: "directory",
+          name: entry.name,
+          path: relativePath,
+          children: readTree(fullPath, relativePath),
+        };
+      }
+
+      if (entry.isFile() && entry.name.endsWith(".mdx")) {
+        return {
+          type: "file",
+          name: entry.name.replace(".mdx", ""),
+          path: relativePath,
+        };
+      }
+
+      return null;
+    })
+    .filter(Boolean);
+}
+
+const tree = readTree(ROOT_DIR);
+---
+
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Archivi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter", system-ui, sans-serif;
+        color: #e7ebf3;
+        background:
+          radial-gradient(1200px 600px at 20% 10%, #10162b 0%, transparent 60%),
+          radial-gradient(1000px 800px at 80% 20%, #0c1124 0%, transparent 55%),
+          linear-gradient(180deg, #05070c, #03050a);
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 3.5rem 1.5rem 4rem;
+      }
+
+      header {
+        margin-bottom: 2.5rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        opacity: 0.85;
+      }
+
+      .subtitle {
+        margin-top: 0.6rem;
+        font-size: 1rem;
+        text-decoration: none;
+        color: aquamarine;
+      }
+
+        .subtitle:hover {
+        text-decoration: underline;
+      }
+
+      /* link pagina principale */
+      .back-home {
+        display: inline-block;
+        margin-top: 0.6rem;
+        font-size: 0.9rem;
+        color: #9ecbff;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+      .back-home:hover { color: #ffffff; text-decoration: underline; }
+
+      .panel {
+        padding: 2.2rem 1.8rem;
+        background: rgba(255, 255, 255, 0.035);
+        backdrop-filter: blur(14px);
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,0.04),
+          0 30px 80px rgba(0,0,0,0.6);
+      }
+
+      /* testi extra */
+      .intro-text {
+        margin: 1.5rem 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        opacity: 0.6;
+      }
+
+      @media (max-width: 600px) {
+        main { padding: 2.5rem 1rem 3rem; }
+        h1 { font-size: 1.3rem; letter-spacing: 0.14em; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <header>
+        <h1>eigen.archives</h1>
+        <!-- link per tornare alla homepage -->
+        <a class="subtitle" href="/">← Torna ad eigen.lab</a>
+
+        <!-- testo introduttivo -->
+        <div class="intro-text">
+          Benvenuto negli archivi di eigen.lab
+          <br>
+          Qui puoi esplorare appunti, lezioni e materiale didattico organizzati per livello scolastico e per argomento senza rischiare di non trovare il materiale
+          </br>
+          Clicca sulle cartelle per navigare tra i contenuti e aprire i file.
+        </div>
+      </header>
+
+      <section class="panel">
+        <Tree nodes={tree} />
+      </section>
+
+      <!-- testo finale / suggerimento -->
+      <div class="intro-text">
+        Puoi sempre tornare alla homepage usando il link sopra.
+        Buona navigazione tra gli appunti!
+      </div>
+    </main>
+  </body>
+</html>
