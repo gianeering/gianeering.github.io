@@ -8,6 +8,7 @@ async function getPosts() {
         description: post.data.description,
         search_code: post.data.search_code,
         containsExamples: post.data.containsExamples,
+        hidefromsearch: post.data.hidefromsearch,
         href: post.data.href,
     }));
 

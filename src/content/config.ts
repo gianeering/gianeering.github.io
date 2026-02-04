@@ -7,6 +7,7 @@ const lezioni = defineCollection({
     search_code: z.string().optional(),
     description: z.string(),
     containsExamples: z.boolean().optional(),
+    hidefromsearch: z.boolean().optional(),
     href: z.string(),
   }),
 });

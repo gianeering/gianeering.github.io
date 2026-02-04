@@ -4,9 +4,7 @@ import "../components/SearchResults.css";
 
 <div class="search-container">
   <div class="search-bar">
-    <span class="search-help" tabindex="0">
-      ?
-    </span>
+    <span class="search-help" tabindex="0"> ? </span>
 
     <div class="search-tooltip">
       Puoi cercare per:
@@ -14,10 +12,8 @@ import "../components/SearchResults.css";
       <br />• parole chiave
       <br />• parte del titolo
       <br /><br />
-      Hint:
-      aggiungi la parola chiave 'esercizi'
+      Hint: aggiungi la parola chiave 'esercizi'
     </div>
-
 
     <input
       type="search"
@@ -99,13 +95,17 @@ import "../components/SearchResults.css";
   function generateSearchList(results) {
     return results
       .map((r) => {
-        const { slug, page_title, containsExamples, description } = r.item;
+        const {
+          slug,
+          page_title,
+          containsExamples,
+          description,
+        } = r.item;
 
         return `<li style="
                 list-style: none;
                 font-size: 1.1rem;
                 color: #ff5e00;
-                padding: 7px 0 0 0;
                 transition: background-color 0.2s, color 0.2s;
             " title="${description}" 
             onmouseover="this.style.backgroundColor='#ff5e00'; this.style.color='#000000';" 
@@ -115,7 +115,7 @@ import "../components/SearchResults.css";
                 </a>
                 ${
                   containsExamples
-                    ? `<span style="font-size: 1.5rem;"> ➠ </span>
+                    ? `<span> ↦ </span>
                        <a style="text-decoration: none; color: inherit;" href="lezioni/${slug + "-esercizi"}">
                           esercizi
                        </a>`
@@ -150,8 +150,11 @@ import "../components/SearchResults.css";
     if (!FUSE_INSTANCE) return;
     const searchResult = FUSE_INSTANCE.search(search);
 
+    // Filtra i risultati che hanno hidefromsearch=true
+    const visibleResults = searchResult.filter((r) => !r.item.hidefromsearch);
+
     // Limita a massimo 5 risultati
-    const limitedResults = searchResult.slice(0, 5);
+    const limitedResults = visibleResults.slice(0, 5);
 
     resultsList.innerHTML =
       limitedResults.length > 0
