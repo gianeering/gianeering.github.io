@@ -1,42 +1,45 @@
 ---
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import Tree from "../components/Archive.astro";
 
-const ROOT_DIR = fileURLToPath(new URL("../content/lezioni", import.meta.url));
+// Importa tutti i file MDX all'interno di content/lezioni
+const modules = import.meta.glob('../content/lezioni/**/*.mdx', { eager: true });
 
-function readTree(dir, base = "") {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
+// Funzione per creare l'albero gerarchico dei file
+function buildTree(paths) {
+  const tree = [];
 
-  return entries
-    .map((entry) => {
-      const fullPath = path.join(dir, entry.name);
-      const relativePath = path.join(base, entry.name);
+  for (const fullPath of Object.keys(paths)) {
+    // Rimuove il prefisso "../content/lezioni/" e l'estensione
+    const relative = fullPath
+      .replace('../content/lezioni/', '')
+      .replace('.mdx', '');
+    const parts = relative.split('/');
 
-      if (entry.isDirectory()) {
-        return {
-          type: "directory",
-          name: entry.name,
-          path: relativePath,
-          children: readTree(fullPath, relativePath),
-        };
+    let currentLevel = tree;
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      const existing = currentLevel.find(node => node.name === part);
+
+      if (existing) {
+        // Vai al livello successivo
+        if (existing.children) currentLevel = existing.children;
+      } else {
+        const isFile = i === parts.length - 1;
+        const newNode = isFile
+          ? { type: 'file', name: part, path: relative }
+          : { type: 'directory', name: part, path: parts.slice(0, i + 1).join('/'), children: [] };
+        currentLevel.push(newNode);
+
+        if (!isFile) currentLevel = newNode.children;
       }
+    }
+  }
 
-      if (entry.isFile() && entry.name.endsWith(".mdx")) {
-        return {
-          type: "file",
-          name: entry.name.replace(".mdx", ""),
-          path: relativePath,
-        };
-      }
-
-      return null;
-    })
-    .filter(Boolean);
+  return tree;
 }
 
-const tree = readTree(ROOT_DIR);
+const tree = buildTree(modules);
 ---
 
 <html lang="it">
@@ -44,7 +47,6 @@ const tree = readTree(ROOT_DIR);
     <meta charset="UTF-8" />
     <title>Archivi</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
     <style>
       body {
         margin: 0;
@@ -57,67 +59,15 @@ const tree = readTree(ROOT_DIR);
           linear-gradient(180deg, #05070c, #03050a);
       }
 
-      main {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 3.5rem 1.5rem 4rem;
-      }
-
-      header {
-        margin-bottom: 2.5rem;
-      }
-
-      h1 {
-        margin: 0;
-        font-size: 1.6rem;
-        font-weight: 500;
-        letter-spacing: 0.18em;
-        opacity: 0.85;
-      }
-
-      .subtitle {
-        margin-top: 0.6rem;
-        font-size: 1rem;
-        text-decoration: none;
-        color: aquamarine;
-      }
-
-        .subtitle:hover {
-        text-decoration: underline;
-      }
-
-      /* link pagina principale */
-      .back-home {
-        display: inline-block;
-        margin-top: 0.6rem;
-        font-size: 0.9rem;
-        color: #9ecbff;
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-      .back-home:hover { color: #ffffff; text-decoration: underline; }
-
-      .panel {
-        padding: 2.2rem 1.8rem;
-        background: rgba(255, 255, 255, 0.035);
-        backdrop-filter: blur(14px);
-        box-shadow:
-          0 0 0 1px rgba(255,255,255,0.04),
-          0 30px 80px rgba(0,0,0,0.6);
-      }
-
-      /* testi extra */
-      .intro-text {
-        margin: 1.5rem 0;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        opacity: 0.6;
-      }
-
-      @media (max-width: 600px) {
-        main { padding: 2.5rem 1rem 3rem; }
-        h1 { font-size: 1.3rem; letter-spacing: 0.14em; }
-      }
+      main { max-width: 1100px; margin: 0 auto; padding: 3.5rem 1.5rem 4rem; }
+      header { margin-bottom: 2.5rem; }
+      h1 { margin: 0; font-size: 1.6rem; font-weight: 500; letter-spacing: 0.18em; opacity: 0.85; }
+      .subtitle { margin-top: 0.6rem; font-size: 1rem; text-decoration: none; color: aquamarine; }
+      .subtitle:hover { text-decoration: underline; }
+      .panel { padding: 2.2rem 1.8rem; background: rgba(255, 255, 255, 0.035); backdrop-filter: blur(14px);
+               box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 30px 80px rgba(0,0,0,0.6); }
+      .intro-text { margin: 1.5rem 0; font-size: 0.9rem; line-height: 1.5; opacity: 0.6; }
+      @media (max-width: 600px) { main { padding: 2.5rem 1rem 3rem; } h1 { font-size: 1.3rem; letter-spacing: 0.14em; } }
     </style>
   </head>
 
@@ -125,10 +75,7 @@ const tree = readTree(ROOT_DIR);
     <main>
       <header>
         <h1>eigen.archives</h1>
-        <!-- link per tornare alla homepage -->
         <a class="subtitle" href="/">← Torna ad eigen.lab</a>
-
-        <!-- testo introduttivo -->
         <div class="intro-text">
           Benvenuto negli archivi di eigen.lab
           <br>
@@ -142,7 +89,6 @@ const tree = readTree(ROOT_DIR);
         <Tree nodes={tree} />
       </section>
 
-      <!-- testo finale / suggerimento -->
       <div class="intro-text">
         Puoi sempre tornare alla homepage usando il link sopra.
         Buona navigazione tra gli appunti!
