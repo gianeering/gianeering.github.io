@@ -1,0 +1,112 @@
+---
+const { nodes, base = "" } = Astro.props;
+import Tree from "./Archive.astro";
+
+function toSlug(path) {
+  return path
+    .replace(/\.mdx$/, "")
+    .replace(/['’,]/g, "")
+    .split("/")
+    .map(p =>
+      p
+        .trim()
+        .toLowerCase()
+        // 1.1) Titolo → 11-titolo
+        .replace(/^(\d+(?:\.\d+)*)\)\s*/, (_, nums) =>
+          nums.replace(/\./g, "") + "-"
+        )
+        // rimuove eventuali ) rimaste
+        .replace(/\)/g, "")
+        // spazi → -
+        .replace(/\s+/g, "-")
+        // evita doppi trattini
+        .replace(/-+/g, "-")
+        // rimuove eventuale trattino iniziale
+        .replace(/^-/, "")
+    )
+    .join("/");
+}
+---
+
+<style>
+.level {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Riga */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.item:hover {
+  background: rgba(255,255,255,0.07);
+}
+
+/* Icona */
+.icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* Testo */
+.label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Ramo figli */
+.children {
+  margin-left: 1.2rem;
+  border-left: 1px solid rgba(255,255,255,0.08);
+  padding-left: 0.6rem;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+</style>
+
+<div class="level">
+  {nodes.map((node) => (
+    <>
+      {node.type === "directory" && (
+        <details>
+          <summary class="item">
+            <div class="icon">📁</div>
+            <div class="label">{node.name}</div>
+          </summary>
+
+          <div class="children">
+            <Tree nodes={node.children} base={base} />
+          </div>
+        </details>
+      )}
+
+      {node.type === "file" && (
+        <a class="item" href={`/lezioni/${toSlug(node.path)}`}>
+          <div class="icon">📄</div>
+          <div class="label">{node.name}</div>
+        </a>
+      )}
+    </>
+  ))}
+</div>

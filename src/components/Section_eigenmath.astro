@@ -1,0 +1,139 @@
+---
+/* secondsection.astro */
+---
+<section class="eigen-maths">
+  <!-- Sfondo pieno con immagine -->
+  <div class="background"></div>
+
+  <!-- Vetri traslucidi con contenuto -->
+  <div class="glass-panel">
+    <h2 class="section-title">EIGEN.MATHS</h2>
+
+    <p class="description">
+      Il percorso da scuola elementare fino all'università non è discontinuo nello spazio
+      <strong>maths</strong>. L'insegnante, lo studente o l'entusiasta della matematica potranno
+      rispolverare nozioni già apprese, studiare per verifiche o esami e ampliare il proprio
+      bagaglio personale.
+      <br /><br />
+      Qui la matematica non viene ridotta a semplice calcolo meccanico,
+      ma trattata come linguaggio formale.
+    </p>
+
+    <a href="/eigenmath" class="enter-button">entra</a>
+  </div>
+
+  <!-- corner lines decorativi -->
+  <div class="corner-top-left-horizontal"></div>
+  <div class="corner-top-left-vertical"></div>
+  <div class="corner-bottom-right-horizontal"></div>
+  <div class="corner-bottom-right-vertical"></div>
+</section>
+
+<style>
+.eigen-maths {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 4rem 0;
+  background: transparent;
+}
+
+/* Sfondo con immagine e gradient */
+.background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(800px 400px at 20% 30%, rgba(0,170,255,0.08), transparent 60%),
+    radial-gradient(600px 300px at 80% 70%, rgba(170,80,255,0.06), transparent 65%);
+}
+
+
+
+/* Vetro traslucido */
+
+.glass-panel {
+  position: relative;
+  z-index: 1;
+  padding: 3rem;
+
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.25);
+
+  width: 100%;        /* <-- tutta la larghezza */
+  max-width: none;   /* <-- rimosso limite */
+  margin: 0;         /* <-- niente margini laterali */
+
+  text-align: center;
+  color: #ffffff;
+}
+
+
+/* Titolo */
+.section-title {
+  font-size: 2.9rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 6px rgba(0, 170, 255, 0.35);
+}
+
+/* Testo */
+.description {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  margin-bottom: 3.2rem;
+  color: rgba(255,255,255,0.88);
+}
+
+/* Bottone */
+.enter-button {
+  display: inline-block;
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #ffffff;
+  position: relative;
+  padding-bottom: 0.4rem;
+}
+
+.enter-button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 45%;
+  height: 1px;
+  background: linear-gradient(to right, rgba(0,170,255,0.8), rgba(0,170,255,0));
+  transition: width 0.35s ease;
+}
+
+.enter-button:hover::after {
+  width: 90%;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .eigen-maths {
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 4rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .description {
+    font-size: 0.95rem;
+    margin-bottom: 2.2rem;
+  }
+}
+</style>

@@ -1,0 +1,85 @@
+  .search-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centro rispetto allo schermo */
+  }
+
+  .search-bar {
+    width: 50%;
+    min-width: 375px;
+    position: relative;
+  }
+
+  /* icona */
+  .search-help {
+    position: absolute;
+    right: 7px;
+    top: 7px;
+    color: #ff5e00;
+    font-weight: bold;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+    font-size: 25px;
+  }
+
+  /* tooltip */
+  .search-tooltip {
+    position: absolute;
+    right: 0;
+    top: 38px;
+    background: rgba(28, 31, 51, 0.98);
+    color: #fff;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    width: 220px;
+    display: none;
+    z-index: 999;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  }
+
+  /* mostra su hover o focus */
+  .search-help:hover + .search-tooltip,
+  .search-help:focus + .search-tooltip {
+    display: block;
+  }
+
+  #searchResults {
+    width: 100%; /* uguale all’input */
+    padding: 0;
+    margin: -18px 0 0 0;
+    background-color: rgba(28, 31, 51, 0.95); /* riquadro scuro */
+  }
+
+  input {
+    background-color: rgba(28, 31, 51, 0.9);
+    color: #ffffff;
+    border: 1px solid #444b6e;
+    font-size: 1.1rem;
+    padding: 5px;
+    transition: border 0.3s ease;
+    width: 100%;
+  }
+
+  input:focus {
+    border-color: #ff5e00;
+    outline: none;
+  }
+
+  #spinner {
+    display: block;
+    margin: 20px auto;
+  }
+
+  /* Chrome, Edge, Opera */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+/* Firefox */
+input[type="search"]::-moz-search-clear-button {
+  display: none;
+}

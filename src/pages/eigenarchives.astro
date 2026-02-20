@@ -1,0 +1,98 @@
+---
+import Tree from "../components/Archive.astro";
+
+// Importa tutti i file MDX all'interno di content/lezioni
+const modules = import.meta.glob('../content/lezioni/**/*.mdx', { eager: true });
+
+// Funzione per creare l'albero gerarchico dei file
+function buildTree(paths) {
+  const tree = [];
+
+  for (const fullPath of Object.keys(paths)) {
+    // Rimuove il prefisso "../content/lezioni/" e l'estensione
+    const relative = fullPath
+      .replace('../content/lezioni/', '')
+      .replace('.mdx', '');
+    const parts = relative.split('/');
+
+    let currentLevel = tree;
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      const existing = currentLevel.find(node => node.name === part);
+
+      if (existing) {
+        // Vai al livello successivo
+        if (existing.children) currentLevel = existing.children;
+      } else {
+        const isFile = i === parts.length - 1;
+        const newNode = isFile
+          ? { type: 'file', name: part, path: relative }
+          : { type: 'directory', name: part, path: parts.slice(0, i + 1).join('/'), children: [] };
+        currentLevel.push(newNode);
+
+        if (!isFile) currentLevel = newNode.children;
+      }
+    }
+  }
+
+  return tree;
+}
+
+const tree = buildTree(modules);
+---
+
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Archivi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter", system-ui, sans-serif;
+        color: #e7ebf3;
+        background:
+          radial-gradient(1200px 600px at 20% 10%, #10162b 0%, transparent 60%),
+          radial-gradient(1000px 800px at 80% 20%, #0c1124 0%, transparent 55%),
+          linear-gradient(180deg, #05070c, #03050a);
+      }
+
+      main { max-width: 1100px; margin: 0 auto; padding: 3.5rem 1.5rem 4rem; }
+      header { margin-bottom: 2.5rem; }
+      h1 { margin: 0; font-size: 1.6rem; font-weight: 500; letter-spacing: 0.18em; opacity: 0.85; }
+      .subtitle { margin-top: 0.6rem; font-size: 1rem; text-decoration: none; color: aquamarine; }
+      .subtitle:hover { text-decoration: underline; }
+      .panel { padding: 2.2rem 1.8rem; background: rgba(255, 255, 255, 0.035); backdrop-filter: blur(14px);
+               box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 30px 80px rgba(0,0,0,0.6); }
+      .intro-text { margin: 1.5rem 0; font-size: 0.9rem; line-height: 1.5; opacity: 0.6; }
+      @media (max-width: 600px) { main { padding: 2.5rem 1rem 3rem; } h1 { font-size: 1.3rem; letter-spacing: 0.14em; } }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <header>
+        <h1>eigen.archives</h1>
+        <a class="subtitle" href="/">← Torna ad eigen.lab</a>
+        <div class="intro-text">
+          Benvenuto negli archivi di eigen.lab
+          <br>
+          Qui puoi esplorare appunti, lezioni e materiale didattico organizzati per livello scolastico e per argomento senza rischiare di non trovare il materiale
+          </br>
+          Clicca sulle cartelle per navigare tra i contenuti e aprire i file.
+        </div>
+      </header>
+
+      <section class="panel">
+        <Tree nodes={tree} />
+      </section>
+
+      <div class="intro-text">
+        Puoi sempre tornare alla homepage usando il link sopra.
+        Buona navigazione tra gli appunti!
+      </div>
+    </main>
+  </body>
+</html>

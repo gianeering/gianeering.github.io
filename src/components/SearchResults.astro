@@ -1,0 +1,183 @@
+---
+import "../components/SearchResults.css";
+---
+
+<div class="search-container">
+  <div class="search-bar">
+    <span class="search-help" tabindex="0"> ? </span>
+
+    <div class="search-tooltip">
+      Puoi cercare per:
+      <br />• nome argomento
+      <br />• parole chiave
+      <br />• parte del titolo
+      <br /><br />
+      Hint: se hai difficoltà usa gli archivi manuali
+    </div>
+
+    <input
+      type="search"
+      required
+      name="search"
+      id="search"
+      placeholder="Digita qui l'argomento che vuoi ricercare..."
+    />
+    <p id="searchReadout"></p>
+    <section aria-label="Search Results">
+      <ul id="searchResults"></ul>
+    </section>
+  </div>
+</div>
+
+<script>
+  import DOMPurify from "isomorphic-dompurify";
+  import Fuse from "fuse.js";
+
+  let SEARCH_DATA;
+  let FUSE_INSTANCE;
+  const FUSE_OPTIONS = {
+    includeScore: true,
+    shouldSort: true,
+    threshold: 0.1,
+    keys: [
+      {
+        name: "search_code",
+        weight: 1,
+      },
+      {
+        name: "description",
+        weight: 1,
+      },
+    ],
+  };
+
+  const SPINNER = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#ffffff" viewBox="0 0 256 256" id="spinner"><path d="M236,128a108,108,0,0,1-216,0c0-42.52,24.73-81.34,63-98.9A12,12,0,1,1,93,50.91C63.24,64.57,44,94.83,44,128a84,84,0,0,0,168,0c0-33.17-19.24-63.43-49-77.09A12,12,0,1,1,173,29.1C211.27,46.66,236,85.48,236,128Z"></path>
+          <style>
+              #spinner {
+                  animation: spin 1s linear infinite;
+              }
+              @keyframes spin {
+                  100% {
+                      transform: rotate(360deg);
+                  }
+              }
+          </style>
+          </svg>`;
+
+  const search = document.querySelector("#search");
+  const searchReadout = document.querySelector("#searchReadout");
+  const resultsList = document.querySelector("#searchResults");
+
+  const ORIGINAL_TITLE = document.title;
+
+  function updateDocumentTitle(search) {
+    if (search && search.length > 0) {
+      document.title = `Corrispondenze per "${search}"`;
+    } else {
+      document.title = ORIGINAL_TITLE;
+    }
+  }
+
+  function updateSearchReadout(search) {
+    searchReadout.textContent = ""; // Rimosso il testo
+  }
+
+  function updateSearchPageURL(search) {
+    const url = new URL(window.location.href);
+    if (search.length > 0) {
+      url.searchParams.set("q", search);
+    } else {
+      url.searchParams.delete("q"); // Rimuove il parametro ?q= se la ricerca è vuota
+    }
+    window.history.replaceState(null, "", url);
+  }
+
+  function generateSearchList(results) {
+    return results
+      .map((r) => {
+        const {
+          slug,
+          page_title,
+          containsExamples,
+          description,
+        } = r.item;
+
+        return `<li style="
+                list-style: none;
+                font-size: 1.1rem;
+                color: #ff5e00;
+                transition: background-color 0.2s, color 0.2s;
+            " title="${description}" 
+            onmouseover="this.style.backgroundColor='#ff5e00'; this.style.color='#000000';" 
+            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ff5e00';">
+                <a style="text-decoration: none; color: inherit;" href="lezioni/${slug}">
+                    ${page_title}
+                </a>
+                ${
+                  containsExamples
+                    ? `<span> ↦ </span>
+                       <a style="text-decoration: none; color: inherit;" href="lezioni/${slug + "-esercizi"}">
+                          esercizi
+                       </a>`
+                    : ""
+                }
+            </li>`;
+      })
+      .join("");
+  }
+
+  async function fetchSearchResults(search) {
+    if (search.length === 0) {
+      resultsList.innerHTML = ""; // Rimuove i risultati se la barra di ricerca è vuota
+      return;
+    }
+    resultsList.innerHTML = SPINNER;
+    if (!SEARCH_DATA) {
+      try {
+        const res = await fetch("/search.json");
+        if (!res.ok) {
+          throw new Error("Qualcosa è andato storto...");
+        }
+        const data = await res.json();
+        SEARCH_DATA = data;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    if (SEARCH_DATA && !FUSE_INSTANCE) {
+      FUSE_INSTANCE = new Fuse(SEARCH_DATA, FUSE_OPTIONS);
+    }
+    if (!FUSE_INSTANCE) return;
+    const searchResult = FUSE_INSTANCE.search(search);
+
+    // Filtra i risultati che hanno hidefromsearch=true
+    const visibleResults = searchResult.filter((r) => !r.item.hidefromsearch);
+
+    // Limita a massimo 5 risultati
+    const limitedResults = visibleResults.slice(0, 5);
+
+    resultsList.innerHTML =
+      limitedResults.length > 0
+        ? generateSearchList(limitedResults)
+        : "Nessuna corrispondenza trovata.";
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const urlParams = DOMPurify.sanitize(
+      new URLSearchParams(window.location.search).get("q"),
+    );
+    fetchSearchResults(urlParams);
+    updateSearchReadout(urlParams);
+    updateDocumentTitle(urlParams);
+    (search as HTMLInputElement).value = urlParams;
+    (search as HTMLInputElement).focus();
+  });
+
+  search.addEventListener("input", () => {
+    const searchTerm = DOMPurify.sanitize((search as HTMLInputElement).value);
+    updateSearchReadout(searchTerm);
+    updateDocumentTitle(searchTerm);
+    fetchSearchResults(searchTerm);
+    updateSearchPageURL(searchTerm);
+  });
+</script>

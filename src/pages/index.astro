@@ -1,0 +1,85 @@
+---
+import Title from "../components/Title.astro"
+---
+
+<html lang="it">
+      <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Gianfranco Ponza",
+      "url": "https://example.com",
+      "sameAs": [
+        ""
+      ]
+    }
+    </script>
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- SEO base -->
+    <title>Appunti di Fisica, Matematica e Scienza | Nome Cognome</title>
+    <meta name="description" content="Appunti chiari e gratuiti di matematica, fisica e scienze. Teoria, esempi ed esercizi organizzati per studenti universitari e appassionati." />
+    <meta name="keywords" content="fisica, matematica, scienza, appunti, esercizi, università, eigenmath, eigenphysics, eigenscience, studio, teoria, didattica" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- OpenGraph (social & Google preview) -->
+    <meta property="og:title" content="Appunti di Fisica, Matematica e Scienza" />
+    <meta property="og:description" content="Raccolta di appunti ed esercizi di fisica, matematica e scienze." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://TUO-SITO.it" />
+    <meta property="og:image" content="https://TUO-SITO.it/preview.png" />
+
+    <!-- Autore -->
+    <link rel="author" href="" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/icons/newfav.ico"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
+        background: url("/index.png") center / cover no-repeat fixed;
+        color: #FFFFFF;
+        scroll-behavior: smooth;
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      a, a:visited { color: #FFFFFF; text-decoration: underline; }
+      a:hover { text-decoration: none; }
+    </style>
+  </head>
+
+  <body>
+    <div align="center">
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+
+      <Title></Title>
+
+      <p></p>
+      <i><small>Non riesci a trovare il materiale? Sfoglia gli archivi <a href="/eigenarchives">manualmente</a></small></i>
+
+      <p>
+        <!-- <a href="/eigenmath">eigen.math</a> |
+        <a href="/eigenscience/">eigen.science</a> |
+        <a href="/eigenphysics">eigen.physics</a> -->
+      </p>
+
+      <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
+
+      <p>
+        <a href="/placeholder" rel="nofollow">Gianfranco Ponza</a> &copy; {new Date().getFullYear()}
+        <br></br>
+        Versione 0.1
+      </p>
+    </div>
+  </body>
+</html>
